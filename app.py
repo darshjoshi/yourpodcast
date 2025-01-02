@@ -6,9 +6,9 @@ import re
 from pathlib import Path
 from io import StringIO
 import openai
-from config import OPENAI_API_KEY
 
-openai.api_key = OPENAI_API_KEY
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 # --------------------------------------------------------------
@@ -241,7 +241,7 @@ def main():
             # 2) Parse the script into segments
             segments = parse_script_into_segments(script)
             # 3) Prepare TTS client
-            client = OpenAI(api_key=OPENAI_API_KEY)
+            client = OpenAI(api_key=openai.api_key)
 
             mp3_files = []
             total_segments = len(segments)
