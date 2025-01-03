@@ -1,3 +1,5 @@
 streamlit
 openai
 ffmpeg-python
+pypdf2
+docx
