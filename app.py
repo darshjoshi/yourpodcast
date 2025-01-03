@@ -6,7 +6,8 @@ import re
 from pathlib import Path
 from io import StringIO
 import openai
-
+from PyPDF2 import PdfReader
+import docx
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -221,9 +222,16 @@ def main():
     if input_mode == "Text":
         text_data = st.text_area("Enter your text/article here:", height=250)
     else:
-        uploaded_file = st.file_uploader("Upload a text file", type=["txt"])
+        uploaded_file = st.file_uploader("Upload a text, PDF, or DOCX file", type=["txt", "pdf", "docx"])
         if uploaded_file is not None:
-            text_data = uploaded_file.read().decode("utf-8")
+            if uploaded_file.type == "text/plain":
+                text_data = uploaded_file.read().decode("utf-8")
+            elif uploaded_file.type == "application/pdf":
+                pdf_reader = PdfReader(uploaded_file)
+                text_data = "\n".join(page.extract_text() for page in pdf_reader.pages)
+            elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                doc = docx.Document(uploaded_file)
+                text_data = "\n".join(paragraph.text for paragraph in doc.paragraphs)
 
     if st.button("Generate Podcast"):
         if not text_data.strip():
